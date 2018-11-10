@@ -14,17 +14,18 @@
  * ====================================================
  */
 
-/* |sin(x)/x - s(x)| < 2**-37.5 (~[-4.89e-12, 4.824e-12]). */
-const S1: f64 = -0.166666666416265235595; /* -0x15555554cbac77.0p-55 */
-const S2: f64 = 0.0083333293858894631756; /*  0x111110896efbb2.0p-59 */
-const S3: f64 = -0.000198393348360966317347; /* -0x1a00f9e2cae774.0p-65 */
-const S4: f64 = 0.0000027183114939898219064; /*  0x16cd878c3b46a7.0p-71 */
+use doubled::{Doubled, FromMask};
 
+/* |sin(x)/x - s(x)| < 2**-37.5 (~[-4.89e-12, 4.824e-12]). */
 #[inline]
-pub fn k_sinf(x: f64) -> f32 {
-    let z = x * x;
-    let w = z * z;
-    let r = S3 + z * S4;
+pub fn k_sinf(x: Doubled<f32>) -> f32 {
+    let s1 = Doubled::<f32>::from_mask(0xbe2aaaab, 0x31b34539); // -0.166666666416265235595
+    let s2 = Doubled::<f32>::from_mask(0x3c088884, 0x2f96efbb); // 0.0083333293858894631756
+    let s3 = Doubled::<f32>::from_mask(0xb95007cf, 0xabb2b9dd); // -0.000198393348360966317347
+    let s4 = Doubled::<f32>::from_mask(0x36366c3c, 0x29c3b46a); // 0.0000027183114939898219064
+    let z = x.square();
+    let w = z.square();
+    let r = s3 + z * s4;
     let s = z * x;
-    ((x + s * (S1 + z * S2)) + s * w * r) as f32
+    ((x + s * (s1 + z * s2)) + s * w * r).into()
 }

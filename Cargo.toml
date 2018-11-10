@@ -9,6 +9,10 @@ name = "libm"
 repository = "https://github.com/japaric/libm"
 version = "0.1.2"
 
+[dependencies.doubled]
+#git = "https://github.com/burrbull/doubled-rs"
+path = "../doubled"
+
 [features]
 # only used to run our test suite
 checked = []

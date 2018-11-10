@@ -17,6 +17,7 @@
  * Return cube root of x
  */
 
+use doubled::AsDoubled;
 use core::f32;
 
 const B1: u32 = 709958130; /* B1 = (127-127.0/3-0.03306235651)*2**23 */
@@ -26,8 +27,6 @@ const B2: u32 = 642849266; /* B2 = (127-127.0/3-24/3-0.03306235651)*2**23 */
 pub fn cbrtf(x: f32) -> f32 {
     let x1p24 = f32::from_bits(0x4b800000); // 0x1p24f === 2 ^ 24
 
-    let mut r: f64;
-    let mut t: f64;
     let mut ui: u32 = x.to_bits();
     let mut hx: u32 = ui & 0x7fffffff;
 
@@ -56,17 +55,18 @@ pub fn cbrtf(x: f32) -> f32 {
      * double precision so that its terms can be arranged for efficiency
      * without causing overflow or underflow.
      */
-    t = f32::from_bits(ui) as f64;
-    r = t * t * t;
-    t = t * (x as f64 + x as f64 + r) / (x as f64 + r + r);
+    let xd = x.as_doubled();
+    let mut t = f32::from_bits(ui).as_doubled();
+    let mut r = t.square() * t;
+    t = t * (xd + x + r) / (xd + r + r);
 
     /*
      * Second step Newton iteration to 47 bits.  In double precision for
      * efficiency and accuracy.
      */
-    r = t * t * t;
-    t = t * (x as f64 + x as f64 + r) / (x as f64 + r + r);
+    r = t.square() * t;
+    t = t * (xd + x + r) / (xd + r + r);
 
     /* rounding to 24 bits is perfect in round-to-nearest mode */
-    t as f32
+    t.into()
 }

@@ -8,19 +8,17 @@
  * is preserved.
  * ====================================================
  */
+use doubled::{Doubled, FromMask, RecPre};
 
 /* |tan(x)/x - t(x)| < 2**-25.5 (~[-2e-08, 2e-08]). */
-const T: [f64; 6] = [
-    0.333331395030791399758,   /* 0x15554d3418c99f.0p-54 */
-    0.133392002712976742718,   /* 0x1112fd38999f72.0p-55 */
-    0.0533812378445670393523,  /* 0x1b54c91d865afe.0p-57 */
-    0.0245283181166547278873,  /* 0x191df3908c33ce.0p-58 */
-    0.00297435743359967304927, /* 0x185dadfcecf44e.0p-61 */
-    0.00946564784943673166728, /* 0x1362b9bf971bcd.0p-59 */
-];
-
 #[inline]
-pub fn k_tanf(x: f64, odd: bool) -> f32 {
+pub fn k_tanf(x: Doubled<f32>, odd: bool) -> f32 {
+    let t0 = Doubled::<f32>::from_mask(0x3eaaaa6a, 0xb23e7366); // 0.333331395030791399758
+    let t1 = Doubled::<f32>::from_mask(0x3e0897ea, 0xb16ccc12); // 0.133392002712976742718
+    let t2 = Doubled::<f32>::from_mask(0x3d5aa649, 0xaf9e6940); // 0.0533812378445670393523
+    let t3 = Doubled::<f32>::from_mask(0x3cc8ef9d, 0xb0773cc3); // 0.0245283181166547278873
+    let t4 = Doubled::<f32>::from_mask(0x3b42ed70, 0xadc4c2ec); // 0.00297435743359967304927
+    let t5 = Doubled::<f32>::from_mask(0x3c1b15ce, 0xad51c866); // 0.00946564784943673166728
     let z = x * x;
     /*
      * Split up the polynomial into small independent terms to give
@@ -36,11 +34,11 @@ pub fn k_tanf(x: f64, odd: bool) -> f32 {
      * and would give results as accurate as Horner's method if the
      * small terms were added from highest degree down.
      */
-    let mut r = T[4] + z * T[5];
-    let t = T[2] + z * T[3];
+    let mut r = t4 + z * t5;
+    let t = t2 + z * t3;
     let w = z * z;
     let s = z * x;
-    let u = T[0] + z * T[1];
+    let u = t0 + z * t1;
     r = (x + s * u) + (s * w) * (t + w * r);
-    (if odd { -1. / r } else { r }) as f32
+    (if odd { -r.recpre() } else { r }).into()
 }

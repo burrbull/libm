@@ -1,6 +1,7 @@
 use core::f32;
 
-use super::sqrtf;
+use doubled::AsDoubled;
+use math::sqrtdf;
 
 #[inline]
 pub fn hypotf(mut x: f32, mut y: f32) -> f32 {
@@ -39,5 +40,5 @@ pub fn hypotf(mut x: f32, mut y: f32) -> f32 {
         x *= x1p90;
         y *= x1p90;
     }
-    z * sqrtf((x as f64 * x as f64 + y as f64 * y as f64) as f32)
+    z * f32::from(sqrtdf(x.as_doubled().square() + y.as_doubled().square()))
 }

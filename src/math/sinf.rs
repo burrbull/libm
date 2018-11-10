@@ -14,19 +14,18 @@
  * ====================================================
  */
 
+use core::f32;
 use super::{k_cosf, k_sinf, rem_pio2f};
-
-use core::f64::consts::FRAC_PI_2;
-
-/* Small multiples of pi/2 rounded to double precision. */
-const S1_PIO2: f64 = 1. * FRAC_PI_2; /* 0x3FF921FB, 0x54442D18 */
-const S2_PIO2: f64 = 2. * FRAC_PI_2; /* 0x400921FB, 0x54442D18 */
-const S3_PIO2: f64 = 3. * FRAC_PI_2; /* 0x4012D97C, 0x7F3321D2 */
-const S4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
+use doubled::{Doubled, AsDoubled, FromMask};
 
 #[inline]
 pub fn sinf(x: f32) -> f32 {
-    let x64 = x as f64;
+    /* Small multiples of pi/2 rounded to double precision. */
+    let pi_1o2 = Doubled::<f32>::from_mask(0x3fc90fdb, 0xb33bbd2e);
+    let pi_2o2 = Doubled::<f32>::from_mask(0x40490fdb, 0xb3bbbd2e);
+    let pi_3o2 = Doubled::<f32>::from_mask(0x4096cbe4, 0xb24cde2e);
+    let pi_4o2 = Doubled::<f32>::from_mask(0x40c90fdb, 0xb43bbd2e);
+    let xd = x.as_doubled();
 
     let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
 
@@ -46,48 +45,49 @@ pub fn sinf(x: f32) -> f32 {
             });
             return x;
         }
-        return k_sinf(x64);
+        return k_sinf(xd);
     }
     if ix <= 0x407b53d1 {
         /* |x| ~<= 5*pi/4 */
         if ix <= 0x4016cbe3 {
             /* |x| ~<= 3pi/4 */
             if sign {
-                return -k_cosf(x64 + S1_PIO2);
+                return -k_cosf(xd + pi_1o2);
             } else {
-                return k_cosf(x64 - S1_PIO2);
+                return k_cosf(xd - pi_1o2);
             }
         }
         return k_sinf(if sign {
-            -(x64 + S2_PIO2)
+            -(xd + pi_2o2)
         } else {
-            -(x64 - S2_PIO2)
+            -(xd - pi_2o2)
         });
     }
     if ix <= 0x40e231d5 {
         /* |x| ~<= 9*pi/4 */
         if ix <= 0x40afeddf {
             /* |x| ~<= 7*pi/4 */
-            if sign {
-                return k_cosf(x64 + S3_PIO2);
+            return if sign {
+                k_cosf(xd + pi_3o2)
             } else {
-                return -k_cosf(x64 - S3_PIO2);
-            }
+                -k_cosf(xd - pi_3o2)
+            };
         }
-        return k_sinf(if sign { x64 + S4_PIO2 } else { x64 - S4_PIO2 });
+        return k_sinf(if sign { xd + pi_4o2 } else { xd - pi_4o2 });
     }
 
     /* sin(Inf or NaN) is NaN */
     if ix >= 0x7f800000 {
-        return x - x;
+        return f32::NAN;
     }
 
     /* general argument reduction needed */
     let (n, y) = rem_pio2f(x);
+    let y : Doubled<f32> = y.into();
     match n & 3 {
         0 => k_sinf(y),
         1 => k_cosf(y),
-        2 => return k_sinf(-y),
+        2 => k_sinf(-y),
         _ => -k_cosf(y),
     }
 }

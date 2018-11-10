@@ -252,3 +252,15 @@ fn with_set_low_word(f: f64, lo: u32) -> f64 {
 fn combine_words(hi: u32, lo: u32) -> f64 {
     f64::from_bits((hi as u64) << 32 | lo as u64)
 }
+
+use doubled::{Doubled, MulAsDoubled, RecPre, Scale};
+#[inline]
+fn sqrtf_as_doubled(x: f32) -> Doubled<f32> {
+    let t = sqrtf(x);
+    ((x + t.mul_as_doubled(t)) * t.recpre()).scale(0.5)
+}
+
+#[inline]
+fn sqrtdf(x: Doubled<f32>) -> Doubled<f32> {
+    sqrtf_as_doubled(x.into())
+}

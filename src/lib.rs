@@ -16,6 +16,8 @@
     feature(core_intrinsics)
 )]
 
+extern crate doubled;
+
 mod math;
 
 use core::{f32, f64};

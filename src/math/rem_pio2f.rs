@@ -35,9 +35,6 @@ const PIO2_1T: f64 = 1.58932547735281966916e-08; /* 0x3E5110b4, 0x611A6263 */
 pub fn rem_pio2f(x: f32) -> (i32, f64) {
     let x64 = x as f64;
 
-    let mut tx: [f64; 1] = [0.];
-    let mut ty: [f64; 1] = [0.];
-
     let ix = x.to_bits() & 0x7fffffff;
     /* 25+53 bit pi is good enough for medium size */
     if ix < 0x4dc90fdb {
@@ -48,12 +45,14 @@ pub fn rem_pio2f(x: f32) -> (i32, f64) {
     }
     if ix >= 0x7f800000 {
         /* x is inf or NaN */
-        return (0, x64 - x64);
+        return (0, f64::NAN);
     }
     /* scale x into [2^23, 2^24-1] */
     let sign = (x.to_bits() >> 31) != 0;
     let e0 = ((ix >> 23) - (0x7f + 23)) as i32; /* e0 = ilogb(|x|)-23, positive */
-    tx[0] = f32::from_bits(ix - (e0 << 23) as u32) as f64;
+
+    let tx: [f64; 1] = [f32::from_bits(ix - (e0 << 23) as u32) as f64];
+    let mut ty: [f64; 1] = [0.];
     let n = rem_pio2_large(&tx, &mut ty, e0, 0);
     if sign {
         return (-n, -ty[0]);
