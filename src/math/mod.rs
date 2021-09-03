@@ -87,6 +87,22 @@ macro_rules! llvm_intrinsically_optimized {
     };
 }
 
+const fn f32_from_bits(b: u32) -> f32 {
+    unsafe { core::mem::transmute(b) }
+}
+
+const fn f32_to_bits(b: f32) -> u32 {
+    unsafe { core::mem::transmute(b) }
+}
+
+const fn f64_from_bits(b: u64) -> f64 {
+    unsafe { core::mem::transmute(b) }
+}
+
+const fn f64_to_bits(b: f64) -> u64 {
+    unsafe { core::mem::transmute(b) }
+}
+
 // Public modules
 mod acos;
 mod acosf;

@@ -1,8 +1,10 @@
 use core::{f32, f64};
+use super::{f64_from_bits, f64_to_bits};
 
 use super::scalbn;
 
 const ZEROINFNAN: i32 = 0x7ff - 0x3ff - 52 - 1;
+const X1_P63: f64 = f64_from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
 
 struct Num {
     m: u64,
@@ -10,15 +12,13 @@ struct Num {
     sign: i32,
 }
 
-fn normalize(x: f64) -> Num {
-    let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
-
-    let mut ix: u64 = x.to_bits();
+const fn normalize(x: f64) -> Num {
+    let mut ix: u64 = f64_to_bits(x);
     let mut e: i32 = (ix >> 52) as i32;
     let sign: i32 = e & 0x800;
     e &= 0x7ff;
     if e == 0 {
-        ix = (x * x1p63).to_bits();
+        ix = f64_to_bits(x * X1_P63);
         e = (ix >> 52) as i32 & 0x7ff;
         e = if e != 0 { e - 63 } else { 0x800 };
     }
@@ -53,7 +53,6 @@ fn mul(x: u64, y: u64) -> (u64, u64) {
 /// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
 pub fn fma(x: f64, y: f64, z: f64) -> f64 {
-    let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
     let x0_ffffff8p_63 = f64::from_bits(0x3bfffffff0000000); // 0x0.ffffff8p-63
 
     /* normalize so top 10bits and last bit are 0 */
@@ -162,7 +161,7 @@ pub fn fma(x: f64, y: f64, z: f64) -> f64 {
     if e < -1022 - 62 {
         /* result is subnormal before rounding */
         if e == -1022 - 63 {
-            let mut c: f64 = x1p63;
+            let mut c: f64 = X1_P63;
             if sign != 0 {
                 c = -c;
             }
