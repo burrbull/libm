@@ -145,7 +145,7 @@ const W5: f64 = 8.36339918996282139126e-04; /* 0x3F4B67BA, 0x4CDAD5D1 */
 const W6: f64 = -1.63092934096575273989e-03; /* 0xBF5AB89D, 0x0B9E43E4 */
 
 /* sin(PI*x) assuming x > 2^-100, if sin(PI*x)==0 the sign is arbitrary */
-fn sin_pi(mut x: f64) -> f64 {
+const fn sin_pi(mut x: f64) -> f64 {
     let mut n: i32;
 
     /* spurious inexact if odd int */
@@ -165,7 +165,7 @@ fn sin_pi(mut x: f64) -> f64 {
 }
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn lgamma_r(mut x: f64) -> (f64, i32) {
+pub const fn lgamma_r(mut x: f64) -> (f64, i32) {
     let u: u64 = x.to_bits();
     let mut t: f64;
     let y: f64;

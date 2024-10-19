@@ -223,9 +223,9 @@ const PIO2: [f64; 8] = [
 /// more accurately, = 0 mod 8 ). Thus the number of operations are
 /// independent of the exponent of the input.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
-    let x1p24 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
-    let x1p_24 = f64::from_bits(0x3e70000000000000); // 0x1p_24 === 2 ^ (-24)
+pub(crate) const fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> i32 {
+    const X1_P24: f64 = f64::from_bits(0x4170000000000000); // 0x1p24 === 2 ^ 24
+    const X1P_24: f64 = f64::from_bits(0x3e70000000000000); // 0x1p_24 === 2 ^ (-24)
 
     #[cfg(all(target_pointer_width = "64", feature = "checked"))]
     assert!(e0 <= 16360);
@@ -257,22 +257,32 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     /* set up f[0] to f[jx+jk] where f[jx+jk] = ipio2[jv+jk] */
     let mut j = (jv as i32) - (jx as i32);
     let m = jx + jk;
-    for i in 0..=m {
-        i!(f, i, =, if j < 0 {
-            0.
-        } else {
-            i!(IPIO2, j as usize) as f64
-        });
-        j += 1;
+    {
+        let mut i = 0;
+        while i <= m {
+            i!(f, i, =, if j < 0 {
+                0.
+            } else {
+                i!(IPIO2, j as usize) as f64
+            });
+            j += 1;
+            i += 1;
+        }
     }
 
     /* compute q[0],q[1],...q[jk] */
-    for i in 0..=jk {
-        fw = 0f64;
-        for j in 0..=jx {
-            fw += i!(x, j) * i!(f, jx + i - j);
+    {
+        let mut i = 0;
+        while i <= jk {
+            fw = 0f64;
+            let mut j = 0;
+            while j <= jx {
+                fw += i!(x, j) * i!(f, jx + i - j);
+                j += 1;
+            }
+            i!(q, i, =, fw);
+            i += 1;
         }
-        i!(q, i, =, fw);
     }
 
     let mut jz = jk;
@@ -281,11 +291,15 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         /* distill q[] into iq[] reversingly */
         let mut i = 0i32;
         z = i!(q, jz);
-        for j in (1..=jz).rev() {
-            fw = (x1p_24 * z) as i32 as f64;
-            i!(iq, i as usize, =, (z - x1p24 * fw) as i32);
-            z = i!(q, j - 1) + fw;
-            i += 1;
+        {
+            let mut j = 1;
+            while j <= jz {
+                fw = (X1P_24 * z) as i32 as f64;
+                i!(iq, i as usize, =, (z - X1_P24 * fw) as i32);
+                z = i!(q, j - 1) + fw;
+                i += 1;
+                j += 1;
+            }
         }
 
         /* compute n */
@@ -310,16 +324,20 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
             /* q > 0.5 */
             n += 1;
             let mut carry = 0i32;
-            for i in 0..jz {
-                /* compute 1-q */
-                let j = i!(iq, i);
-                if carry == 0 {
-                    if j != 0 {
-                        carry = 1;
-                        i!(iq, i, =, 0x1000000 - j);
+            {
+                let mut i = 0;
+                while i < jz {
+                    /* compute 1-q */
+                    let j = i!(iq, i);
+                    if carry == 0 {
+                        if j != 0 {
+                            carry = 1;
+                            i!(iq, i, =, 0x1000000 - j);
+                        }
+                    } else {
+                        i!(iq, i, =, 0xffffff - j);
                     }
-                } else {
-                    i!(iq, i, =, 0xffffff - j);
+                    i += 1;
                 }
             }
             if q0 > 0 {
@@ -345,8 +363,12 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
         /* check if recomputation is needed */
         if z == 0. {
             let mut j = 0;
-            for i in (jk..=jz - 1).rev() {
-                j |= i!(iq, i);
+            {
+                let mut i = jz - 1;
+                while i >= jk {
+                    j |= i!(iq, i);
+                    i -= 1;
+                }
             }
             if j == 0 {
                 /* need recomputation */
@@ -355,14 +377,22 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
                     k += 1; /* k = no. of terms needed */
                 }
 
-                for i in (jz + 1)..=(jz + k) {
-                    /* add q[jz+1] to q[jz+k] */
-                    i!(f, jx + i, =, i!(IPIO2, jv + i) as f64);
-                    fw = 0f64;
-                    for j in 0..=jx {
-                        fw += i!(x, j) * i!(f, jx + i - j);
+                {
+                    let mut i = jz + 1;
+                    while i <= jz + k {
+                        /* add q[jz+1] to q[jz+k] */
+                        i!(f, jx + i, =, i!(IPIO2, jv + i) as f64);
+                        fw = 0f64;
+                        {
+                            let mut j = 0;
+                            while j <= jx {
+                                fw += i!(x, j) * i!(f, jx + i - j);
+                                j += 1;
+                            }
+                        }
+                        i!(q, i, =, fw);
+                        i += 1;
                     }
-                    i!(q, i, =, fw);
                 }
                 jz += k;
                 continue 'recompute;
@@ -383,9 +413,9 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
     } else {
         /* break z into 24-bit if necessary */
         z = scalbn(z, -q0);
-        if z >= x1p24 {
-            fw = (x1p_24 * z) as i32 as f64;
-            i!(iq, jz, =, (z - x1p24 * fw) as i32);
+        if z >= X1_P24 {
+            fw = (X1P_24 * z) as i32 as f64;
+            i!(iq, jz, =, (z - X1_P24 * fw) as i32);
             jz += 1;
             q0 += 24;
             i!(iq, jz, =, fw as i32);
@@ -396,60 +426,92 @@ pub(crate) fn rem_pio2_large(x: &[f64], y: &mut [f64], e0: i32, prec: usize) -> 
 
     /* convert integer "bit" chunk to floating-point value */
     fw = scalbn(1., q0);
-    for i in (0..=jz).rev() {
-        i!(q, i, =, fw * (i!(iq, i) as f64));
-        fw *= x1p_24;
+    {
+        let mut i = jz;
+        while i >= 0 {
+            i!(q, i, =, fw * (i!(iq, i) as f64));
+            fw *= X1P_24;
+            i -= 1;
+        }
     }
 
     /* compute PIo2[0,...,jp]*q[jz,...,0] */
-    for i in (0..=jz).rev() {
-        fw = 0f64;
-        let mut k = 0;
-        while (k <= jp) && (k <= jz - i) {
-            fw += i!(PIO2, k) * i!(q, i + k);
-            k += 1;
+    {
+        let mut i = jz;
+        while i >= 0 {
+            fw = 0f64;
+            let mut k = 0;
+            while (k <= jp) && (k <= jz - i) {
+                fw += i!(PIO2, k) * i!(q, i + k);
+                k += 1;
+            }
+            i!(fq, jz - i, =, fw);
+            i -= 1;
         }
-        i!(fq, jz - i, =, fw);
     }
 
     /* compress fq[] into y[] */
     match prec {
         0 => {
             fw = 0f64;
-            for i in (0..=jz).rev() {
-                fw += i!(fq, i);
+            {
+                let mut i = jz;
+                while i >= 0 {
+                    fw += i!(fq, i);
+                    i -= 1;
+                }
             }
             i!(y, 0, =, if ih == 0 { fw } else { -fw });
         }
         1 | 2 => {
             fw = 0f64;
-            for i in (0..=jz).rev() {
-                fw += i!(fq, i);
+            {
+                let mut i = jz;
+                while i >= 0 {
+                    fw += i!(fq, i);
+                    i -= 1;
+                }
             }
             // TODO: drop excess precision here once double_t is used
             fw = fw as f64;
             i!(y, 0, =, if ih == 0 { fw } else { -fw });
             fw = i!(fq, 0) - fw;
-            for i in 1..=jz {
-                fw += i!(fq, i);
+            {
+                let mut i = 1;
+                while i <= jz {
+                    fw += i!(fq, i);
+                    i += 1;
+                }
             }
             i!(y, 1, =, if ih == 0 { fw } else { -fw });
         }
         3 => {
             /* painful */
-            for i in (1..=jz).rev() {
-                fw = i!(fq, i - 1) + i!(fq, i);
-                i!(fq, i, +=, i!(fq, i - 1) - fw);
-                i!(fq, i - 1, =, fw);
+            {
+                let mut i = jz;
+                while i >= 1 {
+                    fw = i!(fq, i - 1) + i!(fq, i);
+                    i!(fq, i, +=, i!(fq, i - 1) - fw);
+                    i!(fq, i - 1, =, fw);
+                    i -= 1;
+                }
             }
-            for i in (2..=jz).rev() {
-                fw = i!(fq, i - 1) + i!(fq, i);
-                i!(fq, i, +=, i!(fq, i - 1) - fw);
-                i!(fq, i - 1, =, fw);
+            {
+                let mut i = jz;
+                while i >= 2 {
+                    fw = i!(fq, i - 1) + i!(fq, i);
+                    i!(fq, i, +=, i!(fq, i - 1) - fw);
+                    i!(fq, i - 1, =, fw);
+                    i -= 1;
+                }
             }
             fw = 0f64;
-            for i in (2..=jz).rev() {
-                fw += i!(fq, i);
+            {
+                let mut i = jz;
+                while i >= 2 {
+                    fw += i!(fq, i);
+                    i -= 1;
+                }
             }
             if ih == 0 {
                 i!(y, 0, =, i!(fq, 0));

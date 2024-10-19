@@ -18,7 +18,7 @@ use super::{cosf, fabsf, logf, sinf, sqrtf};
 const INVSQRTPI: f32 = 5.6418961287e-01; /* 0x3f106ebb */
 const TPI: f32 = 6.3661974669e-01; /* 0x3f22f983 */
 
-fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
+const fn common(ix: u32, x: f32, y1: bool, sign: bool) -> f32 {
     let z: f64;
     let mut s: f64;
     let c: f64;
@@ -63,7 +63,7 @@ const S03: f32 = 1.1771846857e-06; /* 0x359dffc2 */
 const S04: f32 = 5.0463624390e-09; /* 0x31ad6446 */
 const S05: f32 = 1.2354227016e-11; /* 0x2d59567e */
 
-pub fn j1f(x: f32) -> f32 {
+pub const fn j1f(x: f32) -> f32 {
     let mut z: f32;
     let r: f32;
     let s: f32;
@@ -107,7 +107,7 @@ const V0: [f32; 5] = [
     1.6655924903e-11, /* 0x2d9281cf */
 ];
 
-pub fn y1f(x: f32) -> f32 {
+pub const fn y1f(x: f32) -> f32 {
     let z: f32;
     let u: f32;
     let v: f32;
@@ -214,7 +214,7 @@ const PS2: [f32; 5] = [
     8.3646392822e+00, /* 0x4105d590 */
 ];
 
-fn ponef(x: f32) -> f32 {
+const fn ponef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
     let z: f32;
@@ -242,7 +242,7 @@ fn ponef(x: f32) -> f32 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qone is
@@ -326,7 +326,7 @@ const QS2: [f32; 6] = [
     -4.9594988823e+00, /* 0xc09eb437 */
 ];
 
-fn qonef(x: f32) -> f32 {
+const fn qonef(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];
     let s: f32;
@@ -354,7 +354,7 @@ fn qonef(x: f32) -> f32 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (0.375 + r / s) / x;
+    (0.375 + r / s) / x
 }
 
 // PowerPC tests are failing on LLVM 13: https://github.com/rust-lang/rust/issues/88520

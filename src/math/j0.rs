@@ -59,7 +59,7 @@ const INVSQRTPI: f64 = 5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */
 const TPI: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
 
 /* common method when |x|>=2 */
-fn common(ix: u32, x: f64, y0: bool) -> f64 {
+const fn common(ix: u32, x: f64, y0: bool) -> f64 {
     let s: f64;
     let mut c: f64;
     let mut ss: f64;
@@ -96,7 +96,7 @@ fn common(ix: u32, x: f64, y0: bool) -> f64 {
             cc = pzero(x) * cc - qzero(x) * ss;
         }
     }
-    return INVSQRTPI * cc / sqrt(x);
+    INVSQRTPI * cc / sqrt(x)
 }
 
 /* R0/S0 on [0, 2.00] */
@@ -109,7 +109,7 @@ const S02: f64 = 1.16926784663337450260e-04; /* 0x3F1EA6D2, 0xDD57DBF4 */
 const S03: f64 = 5.13546550207318111446e-07; /* 0x3EA13B54, 0xCE84D5A9 */
 const S04: f64 = 1.16614003333790000205e-09; /* 0x3E1408BC, 0xF4745D8F */
 
-pub fn j0(mut x: f64) -> f64 {
+pub const fn j0(mut x: f64) -> f64 {
     let z: f64;
     let r: f64;
     let s: f64;
@@ -147,7 +147,7 @@ pub fn j0(mut x: f64) -> f64 {
         /* |x| >= 2**-127 */
         x = 0.25 * x * x;
     }
-    return 1.0 - x;
+    1.0 - x
 }
 
 const U00: f64 = -7.38042951086872317523e-02; /* 0xBFB2E4D6, 0x99CBD01F */
@@ -162,7 +162,7 @@ const V02: f64 = 7.60068627350353253702e-05; /* 0x3F13ECBB, 0xF578C6C1 */
 const V03: f64 = 2.59150851840457805467e-07; /* 0x3E91642D, 0x7FF202FD */
 const V04: f64 = 4.41110311332675467403e-10; /* 0x3DFE5018, 0x3BD6D9EF */
 
-pub fn y0(x: f64) -> f64 {
+pub const fn y0(x: f64) -> f64 {
     let z: f64;
     let u: f64;
     let v: f64;
@@ -198,7 +198,7 @@ pub fn y0(x: f64) -> f64 {
         v = 1.0 + z * (V01 + z * (V02 + z * (V03 + z * V04)));
         return u / v + TPI * (j0(x) * log(x));
     }
-    return U00 + TPI * log(x);
+    U00 + TPI * log(x)
 }
 
 /* The asymptotic expansions of pzero is
@@ -278,7 +278,7 @@ const PS2: [f64; 5] = [
     1.46576176948256193810e+01, /* 0x402D50B3, 0x44391809 */
 ];
 
-fn pzero(x: f64) -> f64 {
+const fn pzero(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 5];
     let z: f64;
@@ -306,7 +306,7 @@ fn pzero(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qzero is
@@ -390,7 +390,7 @@ const QS2: [f64; 6] = [
     -5.31095493882666946917e+00, /* 0xC0153E6A, 0xF8B32931 */
 ];
 
-fn qzero(x: f64) -> f64 {
+const fn qzero(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 6];
     let s: f64;
@@ -418,5 +418,5 @@ fn qzero(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (-0.125 + r / s) / x;
+    (-0.125 + r / s) / x
 }

@@ -83,7 +83,7 @@ const SB5: f32 = 2.5530502930e+03; /* 0x451f90ce */
 const SB6: f32 = 4.7452853394e+02; /* 0x43ed43a7 */
 const SB7: f32 = -2.2440952301e+01; /* 0xc1b38712 */
 
-fn erfc1(x: f32) -> f32 {
+const fn erfc1(x: f32) -> f32 {
     let s: f32;
     let p: f32;
     let q: f32;
@@ -94,7 +94,7 @@ fn erfc1(x: f32) -> f32 {
     return 1.0 - ERX - p / q;
 }
 
-fn erfc2(mut ix: u32, mut x: f32) -> f32 {
+const fn erfc2(mut ix: u32, mut x: f32) -> f32 {
     let s: f32;
     let r: f32;
     let big_s: f32;
@@ -131,7 +131,7 @@ fn erfc2(mut ix: u32, mut x: f32) -> f32 {
 /// the probability that an observation will fall within x standard
 /// deviations of the mean (assuming a normal distribution).
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn erff(x: f32) -> f32 {
+pub const fn erff(x: f32) -> f32 {
     let r: f32;
     let s: f32;
     let z: f32;
@@ -180,7 +180,7 @@ pub fn erff(x: f32) -> f32 {
 /// Is `1 - erf(x)`. Is computed directly, so that you can use it to avoid
 /// the loss of precision that would result from subtracting
 /// large probabilities (on large `x`) from 1.
-pub fn erfcf(x: f32) -> f32 {
+pub const fn erfcf(x: f32) -> f32 {
     let r: f32;
     let s: f32;
     let z: f32;

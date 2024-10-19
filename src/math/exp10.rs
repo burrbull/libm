@@ -7,7 +7,7 @@ const P10: &[f64] = &[
 ];
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn exp10(x: f64) -> f64 {
+pub const fn exp10(x: f64) -> f64 {
     let (mut y, n) = modf(x);
     let u: u64 = n.to_bits();
     /* fabs(n) < 16 without raising invalid on nan */
@@ -18,5 +18,5 @@ pub fn exp10(x: f64) -> f64 {
         y = exp2(LN10 * y);
         return y * i!(P10, ((n as isize) + 15) as usize);
     }
-    return pow(10.0, x);
+    pow(10.0, x)
 }

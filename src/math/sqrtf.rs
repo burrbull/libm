@@ -14,7 +14,7 @@
  */
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sqrtf(x: f32) -> f32 {
+pub const fn sqrtf(x: f32) -> f32 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized
     // `f32.sqrt` native instruction, so we can leverage this for both code size
     // and speed.

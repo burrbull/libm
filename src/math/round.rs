@@ -3,7 +3,7 @@ use super::trunc;
 use core::f64;
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn round(x: f64) -> f64 {
+pub const fn round(x: f64) -> f64 {
     trunc(x + copysign(0.5 - 0.25 * f64::EPSILON, x))
 }
 

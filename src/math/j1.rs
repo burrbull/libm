@@ -59,7 +59,7 @@ use super::{cos, fabs, get_high_word, get_low_word, log, sin, sqrt};
 const INVSQRTPI: f64 = 5.64189583547756279280e-01; /* 0x3FE20DD7, 0x50429B6D */
 const TPI: f64 = 6.36619772367581382433e-01; /* 0x3FE45F30, 0x6DC9C883 */
 
-fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
+const fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     let z: f64;
     let mut s: f64;
     let c: f64;
@@ -99,7 +99,7 @@ fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     if sign {
         cc = -cc;
     }
-    return INVSQRTPI * cc / sqrt(x);
+    INVSQRTPI * cc / sqrt(x)
 }
 
 /* R0/S0 on [0,2] */
@@ -113,7 +113,7 @@ const S03: f64 = 1.17718464042623683263e-06; /* 0x3EB3BFF8, 0x333F8498 */
 const S04: f64 = 5.04636257076217042715e-09; /* 0x3E35AC88, 0xC97DFF2C */
 const S05: f64 = 1.23542274426137913908e-11; /* 0x3DAB2ACF, 0xCFB97ED8 */
 
-pub fn j1(x: f64) -> f64 {
+pub const fn j1(x: f64) -> f64 {
     let mut z: f64;
     let r: f64;
     let s: f64;
@@ -140,7 +140,7 @@ pub fn j1(x: f64) -> f64 {
         /* avoid underflow, raise inexact if x!=0 */
         z = x;
     }
-    return (0.5 + z) * x;
+    (0.5 + z) * x
 }
 
 const U0: [f64; 5] = [
@@ -158,7 +158,7 @@ const V0: [f64; 5] = [
     1.66559246207992079114e-11, /* 0x3DB25039, 0xDACA772A */
 ];
 
-pub fn y1(x: f64) -> f64 {
+pub const fn y1(x: f64) -> f64 {
     let z: f64;
     let u: f64;
     let v: f64;
@@ -190,7 +190,7 @@ pub fn y1(x: f64) -> f64 {
     z = x * x;
     u = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
     v = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
-    return x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x);
+    x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x)
 }
 
 /* For x >= 8, the asymptotic expansions of pone is
@@ -270,7 +270,7 @@ const PS2: [f64; 5] = [
     8.36463893371618283368e+00, /* 0x4020BAB1, 0xF44E5192 */
 ];
 
-fn pone(x: f64) -> f64 {
+const fn pone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 5];
     let z: f64;
@@ -298,7 +298,7 @@ fn pone(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qone is
@@ -382,7 +382,7 @@ const QS2: [f64; 6] = [
     -4.95949898822628210127e+00, /* 0xC013D686, 0xE71BE86B */
 ];
 
-fn qone(x: f64) -> f64 {
+const fn qone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 6];
     let s: f64;
@@ -410,5 +410,5 @@ fn qone(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (0.375 + r / s) / x;
+    (0.375 + r / s) / x
 }

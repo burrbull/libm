@@ -172,7 +172,7 @@ const SB5: f64 = 2.55305040643316442583e+03; /* 0x40A3F219, 0xCEDF3BE6 */
 const SB6: f64 = 4.74528541206955367215e+02; /* 0x407DA874, 0xE79FE763 */
 const SB7: f64 = -2.24409524465858183362e+01; /* 0xC03670E2, 0x42712D62 */
 
-fn erfc1(x: f64) -> f64 {
+const fn erfc1(x: f64) -> f64 {
     let s: f64;
     let p: f64;
     let q: f64;
@@ -184,7 +184,7 @@ fn erfc1(x: f64) -> f64 {
     1.0 - ERX - p / q
 }
 
-fn erfc2(ix: u32, mut x: f64) -> f64 {
+const fn erfc2(ix: u32, mut x: f64) -> f64 {
     let s: f64;
     let r: f64;
     let big_s: f64;
@@ -220,7 +220,7 @@ fn erfc2(ix: u32, mut x: f64) -> f64 {
 /// the probability that an observation will fall within x standard
 /// deviations of the mean (assuming a normal distribution).
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn erf(x: f64) -> f64 {
+pub const fn erf(x: f64) -> f64 {
     let r: f64;
     let s: f64;
     let z: f64;
@@ -269,7 +269,7 @@ pub fn erf(x: f64) -> f64 {
 /// Is `1 - erf(x)`. Is computed directly, so that you can use it to avoid
 /// the loss of precision that would result from subtracting
 /// large probabilities (on large `x`) from 1.
-pub fn erfc(x: f64) -> f64 {
+pub const fn erfc(x: f64) -> f64 {
     let r: f64;
     let s: f64;
     let z: f64;

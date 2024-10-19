@@ -25,10 +25,10 @@ const S3_PIO2: f64 = 3. * FRAC_PI_2; /* 0x4012D97C, 0x7F3321D2 */
 const S4_PIO2: f64 = 4. * FRAC_PI_2; /* 0x401921FB, 0x54442D18 */
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sinf(x: f32) -> f32 {
+pub const fn sinf(x: f32) -> f32 {
     let x64 = x as f64;
 
-    let x1p120 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
+    const X1_P120: f32 = f32::from_bits(0x7b800000); // 0x1p120f === 2 ^ 120
 
     let mut ix = x.to_bits();
     let sign = (ix >> 31) != 0;
@@ -40,9 +40,9 @@ pub fn sinf(x: f32) -> f32 {
             /* |x| < 2**-12 */
             /* raise inexact if x!=0 and underflow if subnormal */
             force_eval!(if ix < 0x00800000 {
-                x / x1p120
+                x / X1_P120
             } else {
-                x + x1p120
+                x + X1_P120
             });
             return x;
         }

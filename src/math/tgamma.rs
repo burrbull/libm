@@ -27,7 +27,7 @@ use super::{exp, floor, k_cos, k_sin, pow};
 const PI: f64 = 3.141592653589793238462643383279502884;
 
 /* sin(pi x) with x > 0x1p-100, if sin(pi*x)==0 the sign is arbitrary */
-fn sinpi(mut x: f64) -> f64 {
+const fn sinpi(mut x: f64) -> f64 {
     let mut n: isize;
 
     /* argument reduction: x = |x| mod 2 */
@@ -110,7 +110,7 @@ const FACT: [f64; 23] = [
 ];
 
 /* S(x) rational function for positive x */
-fn s(x: f64) -> f64 {
+const fn s(x: f64) -> f64 {
     let mut num: f64 = 0.0;
     let mut den: f64 = 0.0;
 
@@ -130,7 +130,7 @@ fn s(x: f64) -> f64 {
 }
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn tgamma(mut x: f64) -> f64 {
+pub const fn tgamma(mut x: f64) -> f64 {
     let u: u64 = x.to_bits();
     let absx: f64;
     let mut y: f64;

@@ -80,7 +80,7 @@ const W5: f32 = 8.3633989561e-04; /* 0x3a5b3dd2 */
 const W6: f32 = -1.6309292987e-03; /* 0xbad5c4e8 */
 
 /* sin(PI*x) assuming x > 2^-100, if sin(PI*x)==0 the sign is arbitrary */
-fn sin_pi(mut x: f32) -> f32 {
+const fn sin_pi(mut x: f32) -> f32 {
     let mut y: f64;
     let mut n: isize;
 
@@ -100,7 +100,7 @@ fn sin_pi(mut x: f32) -> f32 {
 }
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn lgammaf_r(mut x: f32) -> (f32, i32) {
+pub const fn lgammaf_r(mut x: f32) -> (f32, i32) {
     let u = x.to_bits();
     let mut t: f32;
     let y: f32;

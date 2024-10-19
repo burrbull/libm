@@ -11,6 +11,7 @@ repository = "https://github.com/rust-lang/libm"
 version = "0.2.8"
 edition = "2018"
 exclude = ["/ci/", "/.github/workflows/"]
+rust-version = "1.83"
 
 [features]
 default = []
