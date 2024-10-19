@@ -111,23 +111,27 @@ const FACT: [f64; 23] = [
 ];
 
 /* S(x) rational function for positive x */
-fn s(x: f64) -> f64 {
+const fn s(x: f64) -> f64 {
     let mut num: f64 = 0.0;
     let mut den: f64 = 0.0;
 
     /* to avoid overflow handle large x differently */
     if x < 8.0 {
-        for i in (0..=N).rev() {
+        let mut i = N;
+        while i != 0 {
             num = num * x + i!(SNUM, i);
             den = den * x + i!(SDEN, i);
+            i -= 1;
         }
     } else {
-        for i in 0..=N {
+        let mut i = 0;
+        while i <= N {
             num = num / x + i!(SNUM, i);
             den = den / x + i!(SDEN, i);
+            i += 1;
         }
     }
-    return num / den;
+    num / den
 }
 
 /// The [Gamma function](https://en.wikipedia.org/wiki/Gamma_function) (f64).
@@ -169,7 +173,7 @@ pub fn tgamma(mut x: f64) -> f64 {
         /* |x| >= 184 */
         if sign {
             let x1p_126 = f64::from_bits(0x3810000000000000); // 0x1p-126 == 2^-126
-            force_eval!((x1p_126 / x) as f32);
+            core::hint::black_box((x1p_126 / x) as f32);
             if floor(x) * 0.5 == floor(x * 0.5) {
                 return 0.0;
             } else {

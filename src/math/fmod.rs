@@ -1,5 +1,5 @@
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fmod(x: f64, y: f64) -> f64 {
+pub const fn fmod(x: f64, y: f64) -> f64 {
     let mut uxi = x.to_bits();
     let mut uyi = y.to_bits();
     let mut ex = (uxi >> 52 & 0x7ff) as i64;

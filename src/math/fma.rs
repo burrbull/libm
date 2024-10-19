@@ -10,7 +10,7 @@ struct Num {
     sign: i32,
 }
 
-fn normalize(x: f64) -> Num {
+const fn normalize(x: f64) -> Num {
     let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
 
     let mut ix: u64 = x.to_bits();
@@ -30,7 +30,7 @@ fn normalize(x: f64) -> Num {
 }
 
 #[inline]
-fn mul(x: u64, y: u64) -> (u64, u64) {
+const fn mul(x: u64, y: u64) -> (u64, u64) {
     let t = (x as u128).wrapping_mul(y as u128);
     ((t >> 64) as u64, t as u64)
 }
@@ -41,7 +41,7 @@ fn mul(x: u64, y: u64) -> (u64, u64) {
 /// Computes the value (as if) to infinite precision and rounds once to the result format,
 /// according to the rounding mode characterized by the value of FLT_ROUNDS.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fma(x: f64, y: f64, z: f64) -> f64 {
+pub const fn fma(x: f64, y: f64, z: f64) -> f64 {
     let x1p63: f64 = f64::from_bits(0x43e0000000000000); // 0x1p63 === 2 ^ 63
     let x0_ffffff8p_63 = f64::from_bits(0x3bfffffff0000000); // 0x0.ffffff8p-63
 
@@ -210,7 +210,7 @@ mod tests {
         let result = fma(-0.992, -0.992, -0.992);
         //force rounding to storage format on x87 to prevent superious errors.
         #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-        let result = force_eval!(result);
+        let result = core::hint::black_box(result);
         assert_eq!(result, -0.007936000000000007,);
     }
 

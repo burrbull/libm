@@ -99,7 +99,7 @@ fn common(ix: u32, x: f64, y1: bool, sign: bool) -> f64 {
     if sign {
         cc = -cc;
     }
-    return INVSQRTPI * cc / sqrt(x);
+    INVSQRTPI * cc / sqrt(x)
 }
 
 /* R0/S0 on [0,2] */
@@ -141,7 +141,7 @@ pub fn j1(x: f64) -> f64 {
         /* avoid underflow, raise inexact if x!=0 */
         z = x;
     }
-    return (0.5 + z) * x;
+    (0.5 + z) * x
 }
 
 const U0: [f64; 5] = [
@@ -192,7 +192,7 @@ pub fn y1(x: f64) -> f64 {
     z = x * x;
     u = U0[0] + z * (U0[1] + z * (U0[2] + z * (U0[3] + z * U0[4])));
     v = 1.0 + z * (V0[0] + z * (V0[1] + z * (V0[2] + z * (V0[3] + z * V0[4]))));
-    return x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x);
+    x * (u / v) + TPI * (j1(x) * log(x) - 1.0 / x)
 }
 
 /* For x >= 8, the asymptotic expansions of pone is
@@ -272,7 +272,7 @@ const PS2: [f64; 5] = [
     8.36463893371618283368e+00, /* 0x4020BAB1, 0xF44E5192 */
 ];
 
-fn pone(x: f64) -> f64 {
+const fn pone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 5];
     let z: f64;
@@ -300,7 +300,7 @@ fn pone(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qone is
@@ -384,7 +384,7 @@ const QS2: [f64; 6] = [
     -4.95949898822628210127e+00, /* 0xC013D686, 0xE71BE86B */
 ];
 
-fn qone(x: f64) -> f64 {
+const fn qone(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 6];
     let s: f64;
@@ -412,5 +412,5 @@ fn qone(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (0.375 + r / s) / x;
+    (0.375 + r / s) / x
 }

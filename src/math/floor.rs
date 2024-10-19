@@ -25,7 +25,7 @@ pub fn floor(x: f64) -> f64 {
     let y = if (ui >> 63) != 0 { x - TOINT + TOINT - x } else { x + TOINT - TOINT - x };
     /* special case because of non-nearest rounding modes */
     if e < 0x3ff {
-        force_eval!(y);
+        core::hint::black_box(y);
         return if (ui >> 63) != 0 { -1. } else { 0. };
     }
     if y > 0. { x + y - 1. } else { x + y }

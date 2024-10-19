@@ -19,5 +19,5 @@ pub fn exp10(x: f64) -> f64 {
         y = exp2(LN10 * y);
         return y * i!(P10, ((n as isize) + 15) as usize);
     }
-    return pow(10.0, x);
+    pow(10.0, x)
 }

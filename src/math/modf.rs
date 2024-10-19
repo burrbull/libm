@@ -1,4 +1,4 @@
-pub fn modf(x: f64) -> (f64, f64) {
+pub const fn modf(x: f64) -> (f64, f64) {
     let rv2: f64;
     let mut u = x.to_bits();
     let mask: u64;
@@ -30,5 +30,5 @@ pub fn modf(x: f64) -> (f64, f64) {
     }
     u &= !mask;
     rv2 = f64::from_bits(u);
-    return (x - rv2, rv2);
+    (x - rv2, rv2)
 }

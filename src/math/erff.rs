@@ -83,7 +83,7 @@ const SB5: f32 = 2.5530502930e+03; /* 0x451f90ce */
 const SB6: f32 = 4.7452853394e+02; /* 0x43ed43a7 */
 const SB7: f32 = -2.2440952301e+01; /* 0xc1b38712 */
 
-fn erfc1(x: f32) -> f32 {
+const fn erfc1(x: f32) -> f32 {
     let s: f32;
     let p: f32;
     let q: f32;

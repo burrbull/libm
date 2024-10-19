@@ -49,7 +49,7 @@ fn common(ix: u32, x: f32, y0: bool) -> f32 {
             cc = pzerof(x) * cc - qzerof(x) * ss;
         }
     }
-    return INVSQRTPI * cc / sqrtf(x);
+    INVSQRTPI * cc / sqrtf(x)
 }
 
 /* R0/S0 on [0, 2.00] */
@@ -93,7 +93,7 @@ pub fn j0f(mut x: f32) -> f32 {
         /* |x| >= 2**-60 */
         x = 0.25 * x * x;
     }
-    return 1.0 - x;
+    1.0 - x
 }
 
 const U00: f32 = -7.3804296553e-02; /* 0xbd9726b5 */
@@ -138,7 +138,7 @@ pub fn y0f(x: f32) -> f32 {
         v = 1.0 + z * (V01 + z * (V02 + z * (V03 + z * V04)));
         return u / v + TPI * (j0f(x) * logf(x));
     }
-    return U00 + TPI * logf(x);
+    U00 + TPI * logf(x)
 }
 
 /* The asymptotic expansions of pzero is
@@ -217,7 +217,7 @@ const PS2: [f32; 5] = [
     1.4657617569e+01, /* 0x416a859a */
 ];
 
-fn pzerof(x: f32) -> f32 {
+const fn pzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 5];
     let z: f32;
@@ -245,7 +245,7 @@ fn pzerof(x: f32) -> f32 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qzero is
@@ -329,7 +329,7 @@ const QS2: [f32; 6] = [
     -5.3109550476e+00, /* 0xc0a9f358 */
 ];
 
-fn qzerof(x: f32) -> f32 {
+const fn qzerof(x: f32) -> f32 {
     let p: &[f32; 6];
     let q: &[f32; 6];
     let s: f32;
@@ -357,5 +357,5 @@ fn qzerof(x: f32) -> f32 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (-0.125 + r / s) / x;
+    (-0.125 + r / s) / x
 }

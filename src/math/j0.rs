@@ -96,7 +96,7 @@ fn common(ix: u32, x: f64, y0: bool) -> f64 {
             cc = pzero(x) * cc - qzero(x) * ss;
         }
     }
-    return INVSQRTPI * cc / sqrt(x);
+    INVSQRTPI * cc / sqrt(x)
 }
 
 /* R0/S0 on [0, 2.00] */
@@ -148,7 +148,7 @@ pub fn j0(mut x: f64) -> f64 {
         /* |x| >= 2**-127 */
         x = 0.25 * x * x;
     }
-    return 1.0 - x;
+    1.0 - x
 }
 
 const U00: f64 = -7.38042951086872317523e-02; /* 0xBFB2E4D6, 0x99CBD01F */
@@ -200,7 +200,7 @@ pub fn y0(x: f64) -> f64 {
         v = 1.0 + z * (V01 + z * (V02 + z * (V03 + z * V04)));
         return u / v + TPI * (j0(x) * log(x));
     }
-    return U00 + TPI * log(x);
+    U00 + TPI * log(x)
 }
 
 /* The asymptotic expansions of pzero is
@@ -280,7 +280,7 @@ const PS2: [f64; 5] = [
     1.46576176948256193810e+01, /* 0x402D50B3, 0x44391809 */
 ];
 
-fn pzero(x: f64) -> f64 {
+const fn pzero(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 5];
     let z: f64;
@@ -308,7 +308,7 @@ fn pzero(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * q[4]))));
-    return 1.0 + r / s;
+    1.0 + r / s
 }
 
 /* For x >= 8, the asymptotic expansions of qzero is
@@ -392,7 +392,7 @@ const QS2: [f64; 6] = [
     -5.31095493882666946917e+00, /* 0xC0153E6A, 0xF8B32931 */
 ];
 
-fn qzero(x: f64) -> f64 {
+const fn qzero(x: f64) -> f64 {
     let p: &[f64; 6];
     let q: &[f64; 6];
     let s: f64;
@@ -420,5 +420,5 @@ fn qzero(x: f64) -> f64 {
     z = 1.0 / (x * x);
     r = p[0] + z * (p[1] + z * (p[2] + z * (p[3] + z * (p[4] + z * p[5]))));
     s = 1.0 + z * (q[0] + z * (q[1] + z * (q[2] + z * (q[3] + z * (q[4] + z * q[5])))));
-    return (-0.125 + r / s) / x;
+    (-0.125 + r / s) / x
 }

@@ -2,7 +2,7 @@
 /// Calculates the absolute value (magnitude) of the argument `x`,
 /// by direct manipulation of the bit representation of `x`.
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn fabs(x: f64) -> f64 {
+pub const fn fabs(x: f64) -> f64 {
     select_implementation! {
         name: fabs,
         use_intrinsic: target_arch = "wasm32",

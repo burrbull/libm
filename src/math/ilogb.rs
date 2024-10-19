@@ -9,7 +9,7 @@ pub fn ilogb(x: f64) -> i32 {
     if e == 0 {
         i <<= 12;
         if i == 0 {
-            force_eval!(0.0 / 0.0);
+            core::hint::black_box(0.0 / 0.0);
             return FP_ILOGB0;
         }
         /* subnormal x */
@@ -20,7 +20,7 @@ pub fn ilogb(x: f64) -> i32 {
         }
         e
     } else if e == 0x7ff {
-        force_eval!(0.0 / 0.0);
+        core::hint::black_box(0.0 / 0.0);
         if (i << 12) != 0 { FP_ILOGBNAN } else { i32::MAX }
     } else {
         e - 0x3ff

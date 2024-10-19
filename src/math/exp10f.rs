@@ -18,5 +18,5 @@ pub fn exp10f(x: f32) -> f32 {
         y = exp2f(LN10_F32 * y);
         return y * i!(P10, ((n as isize) + 7) as usize);
     }
-    return exp2(LN10_F64 * (x as f64)) as f32;
+    exp2(LN10_F64 * (x as f64)) as f32
 }
