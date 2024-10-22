@@ -51,7 +51,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let z_l: f32;
     let mut p_h: f32;
     let mut p_l: f32;
-    let y1: f32;
     let mut t1: f32;
     let t2: f32;
     let mut r: f32;
@@ -61,22 +60,18 @@ pub fn powf(x: f32, y: f32) -> f32 {
     let mut u: f32;
     let mut v: f32;
     let mut w: f32;
-    let i: i32;
     let mut j: i32;
     let mut k: i32;
     let mut yisint: i32;
     let mut n: i32;
-    let hx: i32;
-    let hy: i32;
     let mut ix: i32;
-    let iy: i32;
     let mut is: i32;
 
-    hx = x.to_bits() as i32;
-    hy = y.to_bits() as i32;
+    let hx = x.to_bits() as i32;
+    let hy = y.to_bits() as i32;
 
     ix = hx & 0x7fffffff;
-    iy = hy & 0x7fffffff;
+    let iy = hy & 0x7fffffff;
 
     /* x**0 = 1, even if x is NaN */
     if iy == 0 {
@@ -209,7 +204,6 @@ pub fn powf(x: f32, y: f32) -> f32 {
     } else {
         let mut s2: f32;
         let mut s_h: f32;
-        let s_l: f32;
         let mut t_h: f32;
         let mut t_l: f32;
 
@@ -248,7 +242,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
         is = (((ix as u32 >> 1) & 0xfffff000) | 0x20000000) as i32;
         t_h = f32::from_bits(is as u32 + 0x00400000 + ((k as u32) << 21));
         t_l = ax - (t_h - i!(BP, k as usize));
-        s_l = v * ((u - s_h * t_h) - s_h * t_l);
+        let s_l = v * ((u - s_h * t_h) - s_h * t_l);
         /* compute log(ax) */
         s2 = s * s;
         r = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
@@ -278,7 +272,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
 
     /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
     is = y.to_bits() as i32;
-    y1 = f32::from_bits(is as u32 & 0xfffff000);
+    let y1 = f32::from_bits(is as u32 & 0xfffff000);
     p_l = (y - y1) * t1 + y * t2;
     p_h = y1 * t1;
     z = p_l + p_h;
@@ -305,7 +299,7 @@ pub fn powf(x: f32, y: f32) -> f32 {
     /*
      * compute 2**(p_h+p_l)
      */
-    i = j & 0x7fffffff;
+    let i = j & 0x7fffffff;
     k = (i >> 23) - 0x7f;
     n = 0;
     if i > 0x3f000000 {

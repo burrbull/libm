@@ -9,16 +9,14 @@ pub fn tanh(mut x: f64) -> f64 {
     let mut uf: f64 = x;
     let mut ui: u64 = f64::to_bits(uf);
 
-    let w: u32;
-    let sign: bool;
     let mut t: f64;
 
     /* x = |x| */
-    sign = ui >> 63 != 0;
+    let sign = ui >> 63 != 0;
     ui &= !1 / 2;
     uf = f64::from_bits(ui);
     x = uf;
-    w = (ui >> 32) as u32;
+    let w = (ui >> 32) as u32;
 
     if w > 0x3fe193ea {
         /* |x| > log(3)/2 ~= 0.5493 or nan */

@@ -12,6 +12,7 @@
 #![allow(clippy::float_cmp)]
 #![allow(clippy::eq_op)]
 #![allow(clippy::assign_op_pattern)]
+#![allow(clippy::excessive_precision)]
 
 mod libm_helper;
 mod math;
