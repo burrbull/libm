@@ -116,17 +116,21 @@ const fn s(x: f64) -> f64 {
 
     /* to avoid overflow handle large x differently */
     if x < 8.0 {
-        for i in (0..=N).rev() {
+        let mut i = N;
+        while i >= 0 {
             num = num * x + i!(SNUM, i);
             den = den * x + i!(SDEN, i);
+            i -= 1;
         }
     } else {
-        for i in 0..=N {
+        let mut i = 0;
+        while i <= N {
             num = num / x + i!(SNUM, i);
             den = den / x + i!(SDEN, i);
+            i += 1;
         }
     }
-    return num / den;
+    num / den
 }
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]

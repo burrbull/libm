@@ -18,7 +18,7 @@ pub const fn sqrtf(x: f32) -> f32 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized
     // `f32.sqrt` native instruction, so we can leverage this for both code size
     // and speed.
-    llvm_intrinsically_optimized! {
+    /*llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
             return if x < 0.0 {
                 ::core::f32::NAN
@@ -42,7 +42,7 @@ pub const fn sqrtf(x: f32) -> f32 {
             _mm_cvtss_f32(m_sqrt)
         }
     }
-    #[cfg(any(not(target_feature = "sse"), feature = "force-soft-floats"))]
+    #[cfg(any(not(target_feature = "sse"), feature = "force-soft-floats"))]*/
     {
         const TINY: f32 = 1.0e-30;
 

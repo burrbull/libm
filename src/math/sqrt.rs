@@ -79,11 +79,11 @@
 use core::f64;
 
 #[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn sqrt(x: f64) -> f64 {
+pub const fn sqrt(x: f64) -> f64 {
     // On wasm32 we know that LLVM's intrinsic will compile to an optimized
     // `f64.sqrt` native instruction, so we can leverage this for both code size
     // and speed.
-    llvm_intrinsically_optimized! {
+    /*llvm_intrinsically_optimized! {
         #[cfg(target_arch = "wasm32")] {
             return if x < 0.0 {
                 f64::NAN
@@ -107,7 +107,7 @@ pub fn sqrt(x: f64) -> f64 {
             _mm_cvtsd_f64(m_sqrt)
         }
     }
-    #[cfg(any(not(target_feature = "sse2"), feature = "force-soft-floats"))]
+    #[cfg(any(not(target_feature = "sse2"), feature = "force-soft-floats"))]*/
     {
         use core::num::Wrapping;
 
@@ -121,14 +121,9 @@ pub fn sqrt(x: f64) -> f64 {
         let mut m: i32;
         let mut t: i32;
         let mut i: i32;
-        let mut r: Wrapping<u32>;
-        let mut t1: Wrapping<u32>;
-        let mut s1: Wrapping<u32>;
-        let mut ix1: Wrapping<u32>;
-        let mut q1: Wrapping<u32>;
 
         ix0 = (x.to_bits() >> 32) as i32;
-        ix1 = Wrapping(x.to_bits() as u32);
+        let mut ix1 = Wrapping(x.to_bits() as u32);
 
         /* take care of Inf and NaN */
         if (ix0 & 0x7ff00000) == 0x7ff00000 {
@@ -174,10 +169,10 @@ pub fn sqrt(x: f64) -> f64 {
         ix0 += ix0 + ((ix1 & sign) >> 31).0 as i32;
         ix1 += ix1;
         q = 0; /* [q,q1] = sqrt(x) */
-        q1 = Wrapping(0);
+        let mut q1 = Wrapping(0);
         s0 = 0;
-        s1 = Wrapping(0);
-        r = Wrapping(0x00200000); /* r = moving bit from right to left */
+        let mut s1 = Wrapping(0);
+        let mut r = Wrapping(0x00200000); /* r = moving bit from right to left */
 
         while r != Wrapping(0) {
             t = s0 + r.0 as i32;
@@ -193,7 +188,7 @@ pub fn sqrt(x: f64) -> f64 {
 
         r = sign;
         while r != Wrapping(0) {
-            t1 = s1 + r;
+            let t1 = s1 + r;
             t = s0;
             if t < ix0 || (t == ix0 && t1 <= ix1) {
                 s1 = t1 + r;
@@ -230,8 +225,8 @@ pub fn sqrt(x: f64) -> f64 {
                 }
             }
         }
-        ix0 = (q >> 1) + 0x3fe00000;
-        ix1 = q1 >> 1;
+        let mut ix0 = (q >> 1) + 0x3fe00000;
+        let mut ix1 = q1 >> 1;
         if (q & 1) == 1 {
             ix1 |= sign;
         }
